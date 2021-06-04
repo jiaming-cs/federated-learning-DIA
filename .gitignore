@@ -1,0 +1,4 @@
+**/PELS_dataset/
+.vscode
+**/__pycache__/
+**.png
