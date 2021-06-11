@@ -2,3 +2,5 @@
 .vscode
 **/__pycache__/
 **.png
+flower/detection.pkl
+**/splited_data/
