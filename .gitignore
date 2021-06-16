@@ -4,3 +4,5 @@
 **.png
 flower/detection.pkl
 **/splited_data/
+**.log
+**.pkl

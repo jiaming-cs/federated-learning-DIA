@@ -9,11 +9,12 @@ from collections import OrderedDict
 from argparse import ArgumentParser
 import pickle
 import matplotlib.pyplot as plt
+import time
 
 
 DATASET_DIR = './splited_data'
 INPUT_SIZE = 6 # num of feature for deep learning
-EPOCH = 2
+EPOCH = 30
 BATCH_SIZE = 128
 TIME_STEP = 100  # length of LSTM time sequence, or window size
 VAL_SPLIT = 0.1
@@ -31,12 +32,8 @@ def load_data(client_num):
 
 def test(lstm, test_dataset):
     lstm.eval()
-        
     lstm_eval_loss = 0
     lstm_eval_acc = 0
-
-
-
     test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE)
     
     for step, (batch_x, batch_y) in enumerate(test_loader):
@@ -64,8 +61,8 @@ def test(lstm, test_dataset):
         
         lstm_eval_acc += lstm_eval_correct.item()
                     
-    lstm_eval_acc /= (len(test_loader))
-    lstm_eval_loss /= (len(test_loader))
+    lstm_eval_acc /= float(len(test_loader.dataset))
+    lstm_eval_loss /= float(len(test_loader.dataset))
     history['test']['acc'].append(lstm_eval_acc)
     history['test']['loss'].append(lstm_eval_loss)
     print(f'Testing Loss: {lstm_eval_loss}, Accuracy: {lstm_eval_acc}')
@@ -125,8 +122,8 @@ def train(lstm, train_dataset, epochs):
             
             lstm_optimizer.step()
         
-        lstm_train_acc /= len(training_loader)
-        lstm_train_loss /= len(training_loader)
+        lstm_train_acc /= float(len(training_loader.dataset))
+        lstm_train_loss /= float(len(training_loader.dataset))
         history['train']['acc'].append(lstm_train_acc)
         history['train']['loss'].append(lstm_train_loss)
 
@@ -158,8 +155,9 @@ def train(lstm, train_dataset, epochs):
             lstm_val_acc += lstm_val_correct.item()
                       
             # F1 metrics
-        lstm_val_acc /=  len(val_loader)
-        lstm_val_loss /= len(val_loader)
+
+        lstm_val_acc /=  float(len(val_loader.dataset))
+        lstm_val_loss /= float(len(val_loader.dataset))
         history['val']['acc'].append(lstm_val_acc)
         history['val']['loss'].append(lstm_val_loss)
 
@@ -202,7 +200,8 @@ class CifarClient(fl.client.NumPyClient):
 
 fl.client.start_numpy_client("[::]:8080", client=CifarClient())
 print(history)
-with open('./history.plk', 'wb') as f:
+
+with open(f'./history-{args.client_num}.pkl', 'wb') as f:
     pickle.dump(history, f)    
 
 plt.figure()
@@ -217,7 +216,7 @@ plt.legend()
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.title('Loss Variation')
-plt.savefig('./'+'Loss_LSTM_detection.png',dpi=500)
+plt.savefig('./'+'Loss_LSTM_detection.png')
 
 
 plt.figure()
@@ -232,7 +231,7 @@ plt.legend()
 plt.xlabel('Epoch')
 plt.ylabel('Acc')
 plt.title('Acc Variation')
-plt.savefig('./'+'Acc_LSTM_detection.png',dpi=500)
+plt.savefig('./'+'Acc_LSTM_detection.png')
 
 
 

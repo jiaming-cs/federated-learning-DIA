@@ -1,4 +1,3 @@
-import torch
 from torch import nn
 from torch.utils.data import DataLoader
 INPUT_SIZE = 6 # num of feature for deep learning
