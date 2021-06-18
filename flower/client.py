@@ -14,7 +14,7 @@ import time
 
 DATASET_DIR = './splited_data'
 INPUT_SIZE = 6 # num of feature for deep learning
-EPOCH = 30
+EPOCH = 5
 BATCH_SIZE = 128
 TIME_STEP = 100  # length of LSTM time sequence, or window size
 VAL_SPLIT = 0.1

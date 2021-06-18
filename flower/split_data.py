@@ -21,16 +21,16 @@ def split_data(input_data, client_num, iid=True, abnormal_fraction = 0.75, works
         for i in range(client_num):
             with open(os.path.join(workspace_dir, splited_data_folder, f'data_{i}.pkl'), 'wb') as f:
                 if i == 0:
-                    x_data = np.stack([x_data_abnormal[:num_abnormal_client_0], x_data_normal[:num_normal_client_0]])
-                    y_data = np.vstack([np.zeros((num_abnormal_client_0,)), np.ones((num_normal_client_0,))])
+                    x_data = np.concatenate([x_data_abnormal[:num_abnormal_client_0], x_data_normal[:num_normal_client_0]])
+                    y_data = np.concatenate([np.zeros((num_abnormal_client_0,)), np.ones((num_normal_client_0,))])
                     pickle.dump(dict(x_data=x_data, y_data=y_data), f)
 
                     x_data_abnormal, x_data_normal = x_data_abnormal[num_abnormal_client_0:], x_data_normal[num_normal_client_0:]
                 
                 else:
                     
-                    x_data = np.stack([x_data_abnormal[(i-1)*num_abnormal_other: i*num_abnormal_other], x_data_normal[(i-1)*num_normal_other: i*num_normal_other]])
-                    y_data = np.vstack([np.zeros((num_abnormal_other,)), np.ones((num_normal_other,))])
+                    x_data = np.concatenate([x_data_abnormal[(i-1)*num_abnormal_other: i*num_abnormal_other], x_data_normal[(i-1)*num_normal_other: i*num_normal_other]])
+                    y_data = np.concatenate([np.zeros((num_abnormal_other,)), np.ones((num_normal_other,))])
                     pickle.dump(dict(x_data=x_data, y_data=y_data), f)
 
             print(f"split data {i}")

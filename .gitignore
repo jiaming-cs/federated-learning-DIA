@@ -1,8 +1,6 @@
 **/PELS_dataset/
 .vscode
 **/__pycache__/
-**.png
 flower/detection.pkl
 **/splited_data/
-**.log
-**.pkl
+
