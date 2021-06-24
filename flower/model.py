@@ -12,8 +12,7 @@ class LSTM(nn.Module):
                 batch_first=True,
                 )
         #fully connected
-        #self.out = nn.Linear(32, 9)
-        self.out = nn.Linear(32, 9)
+        self.out = nn.Linear(32, 2)
     
     def forward(self, x):
         lstm_out, (h_n, h_c) = self.lstm(x, None)
