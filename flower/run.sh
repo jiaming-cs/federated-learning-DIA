@@ -1,3 +1,5 @@
 python server.py &
-sleep 3 &
+
+sleep 3s
+
 python main.py

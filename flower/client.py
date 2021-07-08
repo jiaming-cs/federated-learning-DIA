@@ -11,8 +11,6 @@ import pickle
 import matplotlib.pyplot as plt
 import time
 import sklearn
-import warnings
-warnings.filterwarnings('ignore')
 
 DATASET_DIR = './splited_data'
 INPUT_SIZE = 6 # num of feature for deep learning
@@ -65,10 +63,10 @@ def test(lstm, test_dataset):
         lstm_eval_acc += lstm_eval_correct.item()
         lstm_final_prediction = np.concatenate((lstm_final_prediction, lstm_pred.cpu().numpy()), axis=0)
         lstm_final_test = np.concatenate((lstm_final_test, batch_y), axis=0)
+
     f1 = sklearn.metrics.f1_score(lstm_final_test, lstm_final_prediction, average='binary').item()
     recall = sklearn.metrics.recall_score(lstm_final_test, lstm_final_prediction, average='binary').item()
     precision = sklearn.metrics.precision_score(lstm_final_test, lstm_final_prediction, average='binary').item()
-    
     lstm_eval_acc /= float(len(test_loader.dataset))
     lstm_eval_loss /= float(len(test_loader.dataset))
     history['test']['acc'].append(lstm_eval_acc)
