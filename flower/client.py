@@ -10,11 +10,13 @@ from argparse import ArgumentParser
 import pickle
 import matplotlib.pyplot as plt
 import time
-
+import sklearn
+import warnings
+warnings.filterwarnings('ignore')
 
 DATASET_DIR = './splited_data'
 INPUT_SIZE = 6 # num of feature for deep learning
-EPOCH = 5
+EPOCH = 1
 BATCH_SIZE = 128
 TIME_STEP = 100  # length of LSTM time sequence, or window size
 VAL_SPLIT = 0.1
@@ -22,7 +24,7 @@ LR = 0.001   # learning rate
 isGPU = torch.cuda.is_available()
 loss_func = nn.CrossEntropyLoss()
 
-history = {'train':{'loss':[], 'acc':[]}, 'val':{'loss':[], 'acc':[]}, 'test':{'loss':[], 'acc':[]}}
+history = {'train':{'loss':[], 'acc':[]}, 'val':{'loss':[], 'acc':[]}, 'test':{'loss':[], 'acc':[], 'f1':[], 'recall':[], 'precision':[]}}
 
 def load_data(client_num):
     train_dataset = WaveformDetectionDLPickle(DATASET_DIR, client_num)
@@ -35,7 +37,8 @@ def test(lstm, test_dataset):
     lstm_eval_loss = 0
     lstm_eval_acc = 0
     test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE)
-    
+    lstm_final_prediction = np.array([])
+    lstm_final_test = np.array([])
     for step, (batch_x, batch_y) in enumerate(test_loader):
         batch_x = batch_x.view(-1, TIME_STEP, INPUT_SIZE)
         
@@ -60,12 +63,20 @@ def test(lstm, test_dataset):
             lstm_pred = torch.max(output_lstm, 1)[1]
         
         lstm_eval_acc += lstm_eval_correct.item()
-                    
+        lstm_final_prediction = np.concatenate((lstm_final_prediction, lstm_pred.cpu().numpy()), axis=0)
+        lstm_final_test = np.concatenate((lstm_final_test, batch_y), axis=0)
+    f1 = sklearn.metrics.f1_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    recall = sklearn.metrics.recall_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    precision = sklearn.metrics.precision_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    
     lstm_eval_acc /= float(len(test_loader.dataset))
     lstm_eval_loss /= float(len(test_loader.dataset))
     history['test']['acc'].append(lstm_eval_acc)
     history['test']['loss'].append(lstm_eval_loss)
-    print(f'Testing Loss: {lstm_eval_loss}, Accuracy: {lstm_eval_acc}')
+    history['test']['f1'].append(f1)
+    history['test']['recall'].append(recall)
+    history['test']['precision'].append(precision)
+    print(f'Testing Loss: {lstm_eval_loss}, Accuracy: {lstm_eval_acc}, f1: {f1}, recall: {recall}, precision: {precision}')
     return lstm_eval_loss, lstm_eval_acc
 
 def train(lstm, train_dataset, epochs):
@@ -104,9 +115,7 @@ def train(lstm, train_dataset, epochs):
             loss_lstm = loss_func(output_lstm, batch_y)
             
             lstm_train_loss += loss_lstm.item()
-            
-            
-            
+
             if isGPU:
                 lstm_pred = torch.max(output_lstm, 1)[1].cuda()
             else:
@@ -198,7 +207,7 @@ class CifarClient(fl.client.NumPyClient):
         return float(loss), len(test_dataset), {"accuracy":float(accuracy)}
     
 
-fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+fl.client.start_numpy_client("localhost:8080", client=CifarClient())
 print(history)
 
 with open(f'./history-{args.client_num}.pkl', 'wb') as f:

@@ -5,7 +5,7 @@ clean_up_data()
 
 
 CLIENT_NUMBER = 4
-split_data('detection.pkl', CLIENT_NUMBER, iid=False)
+split_data('detection.pkl', CLIENT_NUMBER)
 
 cmd_list = [f' python client.py {i} > client-{i}.log' for i in range(CLIENT_NUMBER)]
 os.system('&'.join(cmd_list)) 

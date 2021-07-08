@@ -1,5 +1,5 @@
 import pickle
 
-with open("./logs/history-1623741657.024014.pkl", "rb") as f:
+with open("./logs/iid-625/history-0.pkl", "rb") as f:
     data = pickle.load(f)
-    print(data)
+    print(data['test']['f1'][-1])

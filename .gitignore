@@ -3,4 +3,6 @@
 **/__pycache__/
 flower/detection.pkl
 **/splited_data/
-
+**.log
+**.png
+**.pkl
