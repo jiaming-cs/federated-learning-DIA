@@ -22,13 +22,12 @@ history = {'train':{'loss':[], 'acc':[]}, 'val':{'loss':[], 'acc':[]}, 'test':{'
 
 def load_data(client_num):
     train_dataset = WaveformDetectionDLPickle(DATASET_DIR, client_num)
-    test_dataset = WaveformDetectionDLPickle(DATASET_DIR, -1)
     
-    return train_dataset, test_dataset
+    return train_dataset
 
 
 lstm = LSTM()
-train_dataset, test_dataset = load_data(0)
+train_dataset = load_data(0)
 
 
 if isGPU:
@@ -38,7 +37,9 @@ if isGPU:
 lstm_optimizer = torch.optim.Adam(lstm.parameters(), lr=LR)
 loss_func = nn.CrossEntropyLoss()
 
-training_data, val_data = torch.utils.data.random_split(train_dataset, [int(len(train_dataset) * (1-VAL_SPLIT)), len(train_dataset) - int(len(train_dataset) * (1-VAL_SPLIT))])
+data_num = 10000
+print(f"Number of data: {data_num}")
+training_data, val_data = torch.utils.data.random_split(train_dataset, [data_num, len(train_dataset)-data_num])
 training_loader = DataLoader(dataset=training_data, batch_size=BATCH_SIZE, shuffle=True)
 val_loader = DataLoader(dataset=val_data, batch_size=BATCH_SIZE)
 
@@ -126,7 +127,7 @@ for epoch in range(EPOCH):
         
 end = time.time()
 print(f"End time:{end}")
-    
+print(f"Totoal time: {end-start}")
 
 
 
