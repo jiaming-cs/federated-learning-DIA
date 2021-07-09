@@ -30,14 +30,12 @@ lstm = LSTM()
 train_dataset = load_data(0)
 
 
-
 if isGPU:
     lstm = nn.DataParallel(lstm, device_ids=[0,1,2,3])
     lstm.cuda()
 
 lstm_optimizer = torch.optim.Adam(lstm.parameters(), lr=LR)
 loss_func = nn.CrossEntropyLoss()
-
 
 data_num = 10000
 print(f"Number of data: {data_num}")
