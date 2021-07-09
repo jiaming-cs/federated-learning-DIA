@@ -9,20 +9,10 @@ Created on Fri Feb  7 15:32:22 2020
 import os
 import torch
 import numpy as np
-import pandas as pd
 from torch.utils.data import Dataset
-from torch import nn
-from torch.utils.data import DataLoader
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-import sklearn.metrics
-from sklearn.metrics import roc_curve, auc
-from sklearn.preprocessing import label_binarize
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier 
-from sklearn.tree import DecisionTreeClassifier
 import pickle
 
 # Detection

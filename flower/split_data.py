@@ -72,6 +72,6 @@ def clean_up_data(workspace_dir='./', splited_data_folder='splited_data'):
             os.remove(os.path.join(workspace_dir, splited_data_folder, f))
         os.removedirs(os.path.join(workspace_dir, splited_data_folder))
 
-# clean_up_data()
+clean_up_data()
 
-# split_data('detection.pkl', 10)
+split_data('detection.pkl', 5)
