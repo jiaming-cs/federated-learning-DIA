@@ -51,18 +51,24 @@ class waveformDetectionDL(Dataset):
     
     def __len__(self):
         return self.len
+
     
 class WaveformDetectionDLPickle(Dataset):
     
-    def __init__(self, path, client_num):
+    def __init__(self, path, client_num=None, file_name=None):
         
         # Directory of normal and abnormal data
-        if client_num == -1:
-            with open(os.path.join(path, 'test_data.pkl'), 'rb') as f:
-                data = pickle.load(f)
+        if not file_name:
+            if client_num == -1:
+                with open(os.path.join(path, 'test_data.pkl'), 'rb') as f:
+                    data = pickle.load(f)
+            else:
+                with open(os.path.join(path, f'data_{client_num}.pkl'), 'rb') as f:
+                    data = pickle.load(f)
         else:
-            with open(os.path.join(path, f'data_{client_num}.pkl'), 'rb') as f:
+            with open(os.path.join(path, file_name), 'rb') as f:
                 data = pickle.load(f)
+                
         self.x_data = data['x_data']
         self.y_data = data['y_data']
         self.len = self.x_data.shape[0]

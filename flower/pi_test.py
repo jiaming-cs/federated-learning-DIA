@@ -22,7 +22,6 @@ history = {'train':{'loss':[], 'acc':[]}, 'val':{'loss':[], 'acc':[]}, 'test':{'
 
 def load_data(client_num):
     train_dataset = WaveformDetectionDLPickle(DATASET_DIR, client_num)
-    
     return train_dataset
 
 
