@@ -1,6 +1,7 @@
 import pickle
 import os
 from sklearn.model_selection import train_test_split
+
 import numpy as np
 
 def get_distribution(client_num, factor=5):
@@ -72,6 +73,6 @@ def clean_up_data(workspace_dir='./', splited_data_folder='splited_data'):
             os.remove(os.path.join(workspace_dir, splited_data_folder, f))
         os.removedirs(os.path.join(workspace_dir, splited_data_folder))
 
-clean_up_data()
+# clean_up_data()
 
-split_data('detection.pkl', 5)
+# split_data('detection.pkl', 5)

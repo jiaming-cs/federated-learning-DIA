@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pickle
 import os
 
-folder = './logs/iid-625'
+folder = './logs/test-iid'
 client_num = 4
 
 plt.figure()
@@ -13,8 +13,8 @@ for i in range(client_num):
     plt.subplot(2, 2, i+1)
     ep = len(history['train']['loss'])
     plt.ylim(0, 0.006)
-    plt.plot(range(ep), history['train']['loss'], label='LSTM training loss')
-    plt.plot(range(ep), history['val']['loss'], label='LSTM validation loss')
+    plt.plot(range(ep), history['train']['loss'], label='Training Loss')
+    plt.plot(range(len(history['test']['loss'][:-1])), history['test']['loss'][:-1], label='Test Loss')
     plt.legend()
     plt.xlabel('Communication Rounds')
     plt.ylabel('Loss')
@@ -30,8 +30,8 @@ for i in range(client_num):
     plt.subplot(2, 2, i+1)
     ep = len(history['train']['acc'])
     plt.ylim(0.5, 1)
-    plt.plot(range(ep), history['train']['acc'], label='LSTM training acc')
-    plt.plot(range(ep), history['val']['acc'], label='LSTM validation acc')
+    plt.plot(range(ep), history['train']['acc'], label='Training Acc')
+    plt.plot(range(len(history['test']['acc'][:-1])), history['test']['acc'][:-1], label='Test Acc')
     plt.legend()
     plt.xlabel('Communication Rounds')
     plt.ylabel('Accuracy')
@@ -41,20 +41,3 @@ plt.tight_layout()
 plt.savefig("./img/acc.png")
 plt.figure()
 
-with open(os.path.join(folder, f'history-0.pkl'), 'rb') as f:
-    history = pickle.load(f)
-
-ep = len(history['test']['acc'])
-plt.plot(range(ep), history['test']['acc'], 'r', label='LSTM Test Acc')
-plt.ylim(0.5, 1)
-plt.legend()
-plt.xlabel('Communication Rounds')
-plt.ylabel('Acc')
-plt.twinx()
-plt.plot(range(ep), history['test']['loss'], 'b', label='LSTM Test Loss')
-plt.ylim(0, 0.006)
-plt.legend()
-plt.xlabel('Communication Rounds')
-plt.ylabel('Loss')
-plt.title('Test Accuracy and Loss')
-plt.savefig("./img/test.png")

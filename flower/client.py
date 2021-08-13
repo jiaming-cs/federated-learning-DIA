@@ -11,6 +11,7 @@ import pickle
 import matplotlib.pyplot as plt
 import time
 import sklearn
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 DATASET_DIR = './splited_data'
 INPUT_SIZE = 6 # num of feature for deep learning
@@ -64,9 +65,9 @@ def test(lstm, test_dataset):
         lstm_final_prediction = np.concatenate((lstm_final_prediction, lstm_pred.cpu().numpy()), axis=0)
         lstm_final_test = np.concatenate((lstm_final_test, batch_y), axis=0)
 
-    f1 = sklearn.metrics.f1_score(lstm_final_test, lstm_final_prediction, average='binary').item()
-    recall = sklearn.metrics.recall_score(lstm_final_test, lstm_final_prediction, average='binary').item()
-    precision = sklearn.metrics.precision_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    f1 = f1_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    recall = recall_score(lstm_final_test, lstm_final_prediction, average='binary').item()
+    precision = precision_score(lstm_final_test, lstm_final_prediction, average='binary').item()
     lstm_eval_acc /= float(len(test_loader.dataset))
     lstm_eval_loss /= float(len(test_loader.dataset))
     history['test']['acc'].append(lstm_eval_acc)
@@ -77,7 +78,7 @@ def test(lstm, test_dataset):
     print(f'Testing Loss: {lstm_eval_loss}, Accuracy: {lstm_eval_acc}, f1: {f1}, recall: {recall}, precision: {precision}')
     return lstm_eval_loss, lstm_eval_acc
 
-def train(lstm, train_dataset, epochs):
+def train(lstm, train_dataset, test_dataset, epochs):
     """Train the network on the training set."""
     
     if isGPU:
@@ -87,10 +88,7 @@ def train(lstm, train_dataset, epochs):
     lstm_optimizer = torch.optim.Adam(lstm.parameters(), lr=LR)
     loss_func = nn.CrossEntropyLoss()
 
-    training_data, val_data = torch.utils.data.random_split(train_dataset, [int(len(train_dataset) * (1-VAL_SPLIT)), len(train_dataset) - int(len(train_dataset) * (1-VAL_SPLIT))])
-    training_loader = DataLoader(dataset=training_data, batch_size=BATCH_SIZE, shuffle=True)
-    val_loader = DataLoader(dataset=val_data, batch_size=BATCH_SIZE)
-
+    training_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     
     for epoch in range(epochs):
         lstm_train_loss = 0
@@ -134,43 +132,10 @@ def train(lstm, train_dataset, epochs):
         history['train']['acc'].append(lstm_train_acc)
         history['train']['loss'].append(lstm_train_loss)
 
-        lstm_val_loss = 0
-        lstm_val_acc = 0
-        for step, (batch_x, batch_y) in enumerate(val_loader):
-            batch_x = batch_x.view(-1, TIME_STEP, INPUT_SIZE)
-            
-            if isGPU:
-                batch_x = batch_x.cuda()
-                batch_y = batch_y.cuda()
-    
-            output_lstm = lstm(batch_x)
-            batch_y = batch_y.type(torch.LongTensor)
-            loss_lstm = loss_func(output_lstm, batch_y)
-            
-            lstm_val_loss += loss_lstm.item()
-            
-            lstm_pred = torch.max(output_lstm, 1)[1]
-            
-            lstm_val_correct = (lstm_pred == batch_y).sum()
-            
-            
-            if isGPU:
-                lstm_pred = torch.max(output_lstm, 1)[1].cuda()
-            else:
-                lstm_pred = torch.max(output_lstm, 1)[1]
-            
-            lstm_val_acc += lstm_val_correct.item()
-                      
-            # F1 metrics
-
-        lstm_val_acc /=  float(len(val_loader.dataset))
-        lstm_val_loss /= float(len(val_loader.dataset))
-        history['val']['acc'].append(lstm_val_acc)
-        history['val']['loss'].append(lstm_val_loss)
+        
 
         print(f'Epoch:{epoch}')
         print(f'Train Loss: {lstm_train_loss}, Accuracy: {lstm_train_acc}')
-        print(f'Validation Loss: {lstm_val_loss}, Accuracy: {lstm_val_acc}')
         
 
 
@@ -196,7 +161,7 @@ class CifarClient(fl.client.NumPyClient):
         
     def fit(self, parameters, config):
         self.set_parameters(parameters)
-        train(net, train_dataset, epochs=EPOCH)
+        train(net, train_dataset, test_dataset, epochs=EPOCH)
         return self.get_parameters(), len(train_dataset), {}
 
     def evaluate(self, parameters, config):
@@ -214,8 +179,9 @@ with open(f'./history-{args.client_num}.pkl', 'wb') as f:
 plt.figure()
 
 ep = len(history['train']['loss'])
-plt.plot(range(ep), history['train']['loss'], label='LSTM training loss')
-plt.plot(range(ep), history['val']['loss'], label='LSTM validation loss')
+print(history)
+plt.plot(range(len(history['train']['loss'])), history['train']['loss'], label='Training loss')
+plt.plot(range(len(history['test']['loss'])), history['test']['loss'], label='Testing loss')
 
 
 plt.legend()
@@ -229,8 +195,8 @@ plt.savefig('./'+'Loss_LSTM_detection.png')
 plt.figure()
 
 ep = len(history['train']['acc'])
-plt.plot(range(ep), history['train']['acc'], label='LSTM training acc')
-plt.plot(range(ep), history['val']['acc'], label='LSTM validation acc')
+plt.plot(range(len(history['train']['acc'])), history['train']['acc'], label='Training acc')
+plt.plot(range(len(history['test']['acc'])), history['test']['acc'], label='Testing acc')
 
 
 plt.legend()
