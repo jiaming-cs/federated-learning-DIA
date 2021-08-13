@@ -50,3 +50,5 @@ def clean_up_data(workspace_dir='./', splited_data_folder='datasets'):
             os.remove(os.path.join(workspace_dir, splited_data_folder, f))
         os.removedirs(os.path.join(workspace_dir, splited_data_folder))
         
+CLIENT_NUMBER = 2
+generate_dataset(CLIENT_NUMBER, 0)
