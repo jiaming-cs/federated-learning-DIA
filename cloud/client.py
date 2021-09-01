@@ -9,6 +9,26 @@ import os
 from models import get_naive_cnn, mobile_net
 from kmeans import fit_kmeans
 
+
+
+paser = ArgumentParser()
+
+paser.add_argument('--client_index', '-c', type=int)
+paser.add_argument('--fault_index', '-f', type=int)
+paser.add_argument('--model_type', '-m', type=str)
+paser.add_argument('--exp_type', '-e', type=str)
+paser.add_argument('--exp_name', '-n', type=str)
+paser.add_argument('-k', action='store_true')
+
+args = paser.parse_args()
+
+client_index = args.client_index
+fault_index= args.fault_index
+model_type = args.model_type
+exp_type = args.exp_type
+exp_name = args.exp_name
+is_kmeans = args.k
+
 history = {'train':{'loss':[], 'acc':[]}, 'val':{'loss':[], 'acc':[]}, 'test':{'loss':[], 'acc':[], 'f1':[], 'recall':[], 'precision':[]}}
 
 def load_data(client_index, fault_client_index, workspace_dir="./", splited_data_folder="datasets"):    
@@ -16,8 +36,9 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}_fault.pkl'), 'rb') as f:
             data = pickle.load(f)
             x_train, y_train = data['x_data'], data['y_data']
-            kmeans_selected = fit_kmeans(x_train, y_train)
-            x_train, y_train = x_train[kmeans_selected], y_train[kmeans_selected]
+            if is_kmeans:
+                kmeans_selected = fit_kmeans(x_train, y_train)
+                x_train, y_train = x_train[kmeans_selected], y_train[kmeans_selected]
     else:
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
             data = pickle.load(f)
@@ -31,22 +52,6 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
     y_train = to_categorical(y_train, 10)
     y_test = to_categorical(y_test, 10)   
     return x_train, y_train, x_test, y_test
-    
-
-
-paser = ArgumentParser()
-
-paser.add_argument('--client_index', '-c', type=int)
-paser.add_argument('--fault_index', '-f', type=int)
-paser.add_argument('--model_type', '-m', type=str)
-paser.add_argument('--exp_type', '-e', type=str)
-
-args = paser.parse_args()
-
-client_index = args.client_index
-fault_index= args.fault_index
-model_type = args.model_type
-exp_type = args.exp_type
 
 print(f"client_index:{client_index}")
 print(f"fault_index:{fault_index}")
@@ -96,11 +101,12 @@ class CifarClient(fl.client.NumPyClient):
 if exp_type == 'cloud':
     fl.client.start_numpy_client("10.142.0.3:8080", client=CifarClient())
 else:
-    fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+    # fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+    fl.client.start_numpy_client("localhost:8080", client=CifarClient())
     
 print(history)
 
-with open(f'./history-{client_index}-fault-{fault_index}.pkl', 'wb') as f:
+with open(f'./logs/{exp_name}/history-{client_index}-fault-{fault_index}.pkl', 'wb') as f:
     pickle.dump(history, f)    
 
 
