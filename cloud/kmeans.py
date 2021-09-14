@@ -4,16 +4,26 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import tensorflow as tf
 
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-
 def fit_kmeans(data_x, data_y):
     data_x_flatten = [x.flatten() for x in data_x]
     label_num = np.unique(data_y).shape[0]
-    
     kmeans = KMeans(n_clusters=label_num).fit(data_x_flatten)
     pred_y = kmeans.labels_
-    # correct_num = sum([1 for pred, gt in zip(pred_y, data_y) if pred == gt])
-    # acc = correct_num / label_num
-    # print(f'acc: {acc}')
-    return [pred for pred, gt in zip(pred_y, data_y) if pred == gt] # Return indecies of kmeans verified data
+    mapping = [(pred, assigned) for pred, assigned in zip(pred_y, data_y)]
+    mapping_counter = {}
+    for m in mapping:
+        mapping_counter[m] = mapping_counter.get(m, 0) + 1
+    mapping_counter_list = [(k, v) for k, v in mapping_counter.items()]
+    mapping_counter_list.sort(key = lambda m: -m[1])
+    print(mapping_counter_list)
+    most_common_mapping = {}
+    for m, _ in mapping_counter_list:
+        if m[0] not in most_common_mapping:
+            most_common_mapping[m[0]] = m[1]
+    
+    pred_y_aligned = [most_common_mapping[i] for i in pred_y]
+        
+    
+    
+    return [i for i, (pred, gt) in enumerate(zip(pred_y_aligned, data_y)) if pred == gt] # Return indecies of kmeans verified data
     

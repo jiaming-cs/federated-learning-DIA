@@ -8,16 +8,21 @@ import os
 
 CLIENT_NUMBER = 4
 FAULT_INDEX = 0
-EXP_NAME = 'with_attack'
+EXP_NAME = 'with_attack_kmean_all'
 IS_KMEANS = True
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
+try:
+    os.makedirs(f"./logs/{EXP_NAME}")
+except:
+    pass
 def generate_cmd(fault_index=FAULT_INDEX, model_type='cnn', exp_type='local', exp_name = EXP_NAME, client_num = CLIENT_NUMBER):
-    os.makedirs(f"./logs/{exp_name}")
+
     if IS_KMEANS:
-        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -k > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
+        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} -k > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
     else:
-        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
+        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
+    print(' & '.join(cmds))
     return ' & '.join(cmds)
 
 
@@ -29,7 +34,7 @@ if len(x_train.shape) < 4:
 generate_dataset(x_train, y_train, x_test, y_test, CLIENT_NUMBER, FAULT_INDEX)
 
 
-os.system("nohup python server.py > server.log 2>&1 &")
+os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
 
 time.sleep(5)
 
