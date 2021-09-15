@@ -1,5 +1,5 @@
 from tensorflow.keras.layers import Input, Conv2D, Dense, MaxPool2D, Flatten
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, Sequential
 import tensorflow as tf
 
 mobile_net = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
@@ -18,10 +18,11 @@ def get_naive_cnn():
     return Model(inputs=[_input], outputs=[x])
 
 
-def get_ann(input_shape=(128)):
-    _input = Input(input_shape)
-    x = Dense(256, activation='relu')(_input)
-    x = Dense(512, activation='relu')(x)
-    x = Dense(256, activation='relu')(x)
-    x = Dense(10, activation='softmax')(x)
-    return Model(inputs=[_input], outputs=[x])
+def get_ann():
+    model = Sequential()
+    model.add(Input(shape=(128, )))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(10, activation='softmax'))
+    print('output shape:', model.output_shape)
+    return model

@@ -8,6 +8,9 @@ import tensorflow as tf
 import os
 from models import get_naive_cnn, mobile_net
 from kmeans import fit_kmeans
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.models import Sequential
+import tensorflow as tf
 
 
 paser = ArgumentParser()
@@ -71,10 +74,11 @@ print("y_train", y_train.shape)
 print("x_test", x_test.shape)
 print("y_test", y_test.shape)
 
-if model_type == "mobile_net":
-    model = mobile_net
-else:
-    model = get_naive_cnn()
+model = Sequential()
+model.add(Input(shape=(128, )))
+model.add(Dense(512, activation='relu'))
+model.add(Dense(256, activation='relu'))
+model.add(Dense(10, activation='softmax'))
 
 model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
 

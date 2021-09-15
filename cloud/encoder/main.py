@@ -3,6 +3,7 @@ import tensorflow as tf
 from generate_dataset import generate_dataset
 import numpy as np
 import time
+from encoder import data_feature
 
 import os
 
@@ -11,6 +12,11 @@ FAULT_INDEX = 0
 EXP_NAME = 'with_attack_kmean_all'
 IS_KMEANS = True
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+
+x_train = x_train.astype('float32')
+x_test = x_test.astype('float32')
+x_train, x_test = data_feature(x_train), data_feature(x_test)
 
 try:
     os.makedirs(f"./logs/{EXP_NAME}")
