@@ -2,8 +2,10 @@ from tensorflow.keras.layers import Input, Conv2D, Dense, MaxPool2D, Flatten
 from tensorflow.keras.models import Model
 from tensorflow.keras.utils import to_categorical
 import tensorflow as tf
+import numpy as np
 
 (_, _), (x_train, y_train) = tf.keras.datasets.mnist.load_data()
+
 
 
 def get_naive_cnn():
@@ -24,6 +26,8 @@ model = get_naive_cnn()
 
 y_train = to_categorical(y_train)
 
+x_train = np.expand_dims(x_train, 3)
+
 model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
 model.fit(x_train, y_train, epochs=50, batch_size=128)
-model.save_weights('./weights/encoder_weights.h5')
+model.save('./weights/encoder_weights.h5')
