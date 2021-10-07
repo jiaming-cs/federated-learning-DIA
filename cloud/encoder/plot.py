@@ -105,12 +105,11 @@ fault_index = -1
 # #################################################################################################################
 
 
-exp_name = "with_attack_kmean_all"
+exp_name = "1_attack_80_error_centralized_fashion"
 
 plt.suptitle(f"{exp_name}_loss")
 normal_folder = f'./logs/{exp_name}'
-fault_index = 0
-
+fault_index = 1
 for i in range(client_num):
     with open(os.path.join(normal_folder, f'history-{i}-fault-{fault_index}.pkl'), 'rb') as f:
         history = pickle.load(f)

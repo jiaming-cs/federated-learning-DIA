@@ -1,4 +1,3 @@
-import subprocess
 import tensorflow as tf
 from generate_dataset import generate_dataset
 import numpy as np
@@ -8,20 +7,32 @@ from encoder import data_feature
 import os
 
 CLIENT_NUMBER = 4
-FAULT_INDEX = 0
-EXP_NAME = 'with_attack_kmean_all'
-IS_KMEANS = True
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+FAULT_INDEX = 3
+EXP_NAME = '4_attack_80_error_centralized_fashion'
+IS_KMEANS = False
 
+# (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+# (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.fashion_mnist.load_data()
+
+x_train, y_train = x_train[5000:], y_train[5000:]
 
 x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
+
 x_train, x_test = data_feature(x_train), data_feature(x_test)
+
+
+
+print(x_train.shape)
+print(x_test.shape)
 
 try:
     os.makedirs(f"./logs/{EXP_NAME}")
 except:
     pass
+
 def generate_cmd(fault_index=FAULT_INDEX, model_type='cnn', exp_type='local', exp_name = EXP_NAME, client_num = CLIENT_NUMBER):
 
     if IS_KMEANS:
@@ -42,7 +53,7 @@ generate_dataset(x_train, y_train, x_test, y_test, CLIENT_NUMBER, FAULT_INDEX)
 
 os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
 
-time.sleep(5)
+time.sleep(20)
 
 os.system(generate_cmd())
 

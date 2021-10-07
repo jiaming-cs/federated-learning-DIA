@@ -5,17 +5,23 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import tensorflow as tf
 
 def fit_kmeans(data_x, data_y):
+    
+    print('x_data: ', data_x.shape)
+    print('y_data: ', data_y.shape)
+    data_y = data_y.flatten()
     data_x_flatten = [x.flatten() for x in data_x]
     label_num = np.unique(data_y).shape[0]
     kmeans = KMeans(n_clusters=label_num).fit(data_x_flatten)
     pred_y = kmeans.labels_
     mapping = [(pred, assigned) for pred, assigned in zip(pred_y, data_y)]
+    
     mapping_counter = {}
     for m in mapping:
         mapping_counter[m] = mapping_counter.get(m, 0) + 1
     mapping_counter_list = [(k, v) for k, v in mapping_counter.items()]
     mapping_counter_list.sort(key = lambda m: -m[1])
-    print(mapping_counter_list)
+    for i, pair in enumerate(mapping_counter_list):
+        print(f'{i}-{pair}')
     most_common_mapping = {}
     for m, _ in mapping_counter_list:
         if m[0] not in most_common_mapping:

@@ -8,7 +8,7 @@ import tensorflow as tf
 import os
 from models import get_naive_cnn, mobile_net
 from kmeans import fit_kmeans
-from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.layers import InputLayer, Dense
 from tensorflow.keras.models import Sequential
 import tensorflow as tf
 
@@ -40,7 +40,9 @@ history = {'train': {'loss': [], 'acc': []}, 'val': {'loss': [], 'acc': []},
            'test': {'loss': [], 'acc': [], 'f1': [], 'recall': [], 'precision': []}}
 
 def load_data(client_index, fault_client_index, workspace_dir="./", splited_data_folder="datasets"):
-    if client_index == fault_client_index:
+    falut_index_list = list(range(fault_client_index+1))
+    if client_index in falut_index_list:
+        print("Fault")
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}_fault.pkl'), 'rb') as f:
             data = pickle.load(f)
             x_train, y_train = data['x_data'], data['y_data']
@@ -49,13 +51,14 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
             data = pickle.load(f)
             x_train, y_train = data['x_data'], data['y_data']
-    with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
+    with open(os.path.join(workspace_dir, splited_data_folder, f'data_test.pkl'), 'rb') as f:
         data = pickle.load(f)
         x_test, y_test = data['x_data'], data['y_data']
     if is_kmeans:
         kmeans_selected = fit_kmeans(x_train, y_train)
         x_train, y_train = x_train[kmeans_selected], y_train[kmeans_selected]
         print("after kmeans:", len(y_train))
+    
     print(f'x_train:{x_train.shape} y_train:{len(y_train)}')
     print(f'x_test:{x_test.shape} y_test:{len(y_test)}')
 
@@ -68,6 +71,8 @@ print(f"fault_index:{fault_index}")
 
 x_train, y_train, x_test, y_test = load_data(client_index=client_index, fault_client_index=fault_index)
 
+x_test = np.reshape(x_test, (-1, 128))
+
 print("x_train", x_train.shape)
 print("y_train", y_train.shape)
 
@@ -75,12 +80,15 @@ print("x_test", x_test.shape)
 print("y_test", y_test.shape)
 
 model = Sequential()
-model.add(Input(shape=(128, )))
+model.add(InputLayer(input_shape=(128, )))
 model.add(Dense(512, activation='relu'))
 model.add(Dense(256, activation='relu'))
 model.add(Dense(10, activation='softmax'))
 
 model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
+
+
+
 
 
 class CifarClient(fl.client.NumPyClient):
@@ -101,12 +109,14 @@ class CifarClient(fl.client.NumPyClient):
         history['test']['loss'].append(loss)
         history['test']['acc'].append(accuracy)
 
-        print(f"Test Loss: {loss}, Test Acc: {accuracy}")
         return model.get_weights(), len(x_train), {}
 
     def evaluate(self, parameters, config):
         model.set_weights(parameters)
         loss, accuracy = model.evaluate(x_test, y_test)
+       
+
+        
         return loss, len(x_test), {"accuracy": accuracy}
 
 if exp_type == 'cloud':
