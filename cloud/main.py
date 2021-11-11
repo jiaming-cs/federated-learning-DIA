@@ -34,7 +34,7 @@ if len(x_train.shape) < 4:
 generate_dataset(x_train, y_train, x_test, y_test, CLIENT_NUMBER, FAULT_INDEX)
 
 
-os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
+# os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
 
 time.sleep(5)
 

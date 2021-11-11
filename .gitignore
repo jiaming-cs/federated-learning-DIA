@@ -6,3 +6,6 @@ flower/detection.pkl
 **.log
 **.png
 **.pkl
+**/logs/
+**/img/
+**/datasets/

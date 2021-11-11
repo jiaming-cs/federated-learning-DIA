@@ -1,3 +1,4 @@
+from statistics import mode
 import flwr as fl
 import os
 import pickle
@@ -6,14 +7,17 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 import tensorflow as tf
 import numpy as np
+from encoder_model import get_naive_cnn
 
+# model = Sequential()
+# model.add(InputLayer(input_shape=(128, )))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dense(512, activation='relu'))
+# model.add(Dense(256, activation='relu'))
+# model.add(Dense(128, activation='relu'))
+# model.add(Dense(10, activation='softmax'))
 
-model = Sequential()
-model.add(InputLayer(input_shape=(128, )))
-model.add(Dense(512, activation='relu'))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(10, activation='softmax'))
-
+model = get_naive_cnn()
 model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
 
 
@@ -23,7 +27,7 @@ with open(os.path.join(workspace_dir, splited_data_folder, f'data_test.pkl'), 'r
     data = pickle.load(f)
     
     x_test, y_test = data['x_data'], data['y_data']
-    x_test = np.reshape(x_test, (-1, 128))
+    # x_test = np.reshape(x_test, (-1, 128))
     y_test = to_categorical(y_test, 10)
     
 def get_eval_fn(model):
@@ -42,5 +46,6 @@ def get_eval_fn(model):
     return evaluate
 
 
-strategy = fl.server.strategy.FedAvg(fraction_fit=1, fraction_eval=1, min_fit_clients=2, min_available_clients=2, eval_fn=get_eval_fn(model))
-fl.server.start_server(config={"num_rounds": 100}, strategy=strategy)
+strategy = fl.server.strategy.FedAvg(fraction_fit=1, fraction_eval=1.0, min_fit_clients=2, min_available_clients=2, eval_fn=get_eval_fn(model))
+
+fl.server.start_server(config={"num_rounds": 30}, strategy=strategy)

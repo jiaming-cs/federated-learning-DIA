@@ -2,40 +2,35 @@ import numpy as np
 import os
 import pickle
 
-LABEL_NUM = 10
-def random_change(old, label_num=LABEL_NUM):
-    new = int(np.random.rand() * label_num)
-    while new == old:
-        new = int(np.random.rand() * label_num)
-    return new
 
-def generate_dataset(x_train, y_train, x_test, y_test, client_num, falut_client_index, falut_ratio=0.8, workspace_dir="./", splited_data_folder="datasets"):
+def random_change(old):
+    if old == 1:
+        return 0
+    else:
+        return 1
+
+def generate_dataset(x_train, y_train, x_test, y_test, client_num, falut_client_index, falut_ratio=0.2, workspace_dir="./", splited_data_folder="datasets"):
    
     clean_up_data()
     os.makedirs(os.path.join(workspace_dir, splited_data_folder))
-
-    num_pre_client = x_train.shape[0] // client_num
     
-    fault_client_index_list = list(range(falut_client_index+1))
+        
+    num_pre_client = x_train.shape[0] // client_num
     
     for i in range(client_num):
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{i}.pkl'), 'wb') as f:
-            x_data = x_train[i*num_pre_client:i*num_pre_client+num_pre_client].copy()
-            y_data = y_train[i*num_pre_client:i*num_pre_client+num_pre_client].copy()
-            # x_data = np.reshape(x_data, (-1, 128))
+            x_data = x_train[i*num_pre_client:i*num_pre_client+num_pre_client]
+            y_data = y_train[i*num_pre_client:i*num_pre_client+num_pre_client] 
             pickle.dump(dict(x_data=x_data, y_data=y_data), f)
             
-        if i in fault_client_index_list:
+        if i<= falut_client_index:
             with open(os.path.join(workspace_dir, splited_data_folder, f'data_{i}_fault.pkl'), 'wb') as f:
-                x_data = x_train[i*num_pre_client:i*num_pre_client+num_pre_client].copy()
-                y_data = y_train[i*num_pre_client:i*num_pre_client+num_pre_client].copy() 
+                x_data = x_train[i*num_pre_client:i*num_pre_client+num_pre_client]
+                y_data = y_train[i*num_pre_client:i*num_pre_client+num_pre_client] 
                 fault_num = int(y_data.shape[0]*falut_ratio)
-                
-                fault_index = np.random.choice(y_data.shape[0], fault_num, replace=False)
-                print(fault_index)
+                fault_index = np.random.choice(range(y_data.shape[0]), fault_num)
                 for j in fault_index:
-                    y_data[j] = np.random.randint(0, 10)
-                # x_data = np.reshape(x_data, (-1, 128))
+                    y_data[j] = random_change(y_data[j])
                 pickle.dump(dict(x_data=x_data, y_data=y_data), f)
         print(f"create data {i}")
                 

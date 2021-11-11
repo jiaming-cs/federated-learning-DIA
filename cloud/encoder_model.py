@@ -20,6 +20,7 @@ def get_naive_cnn():
     return Model(inputs=[_input], outputs=[x])
 
 
+
 model = get_naive_cnn()
 
 y_train = to_categorical(y_train)

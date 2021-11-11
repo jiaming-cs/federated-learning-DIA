@@ -1,7 +1,6 @@
 
 from tensorflow.keras.models import Model, load_model
 
-from encoder_model import Autoencoder
 
 import random
 import matplotlib.pyplot as plt
@@ -62,7 +61,7 @@ class EmbeddingModel(keras.Model):
             # want the main diagonal values, which correspond to the anchor/positive
             # pairs, to be high. This loss will move embeddings for the
             # anchor/positive pairs together and move all other pairs apart.
-            sparse_labels = tf.range(10)
+            sparse_labels = tf.range(2)
             loss = self.compiled_loss(sparse_labels, similarities)
 
         # Calculate gradients and apply via optimizer.
@@ -73,10 +72,10 @@ class EmbeddingModel(keras.Model):
         self.compiled_metrics.update_state(sparse_labels, similarities)
         return {m.name: m.result() for m in self.metrics}
     
-inputs = layers.Input(shape=(28, 28, 1))
-x = layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu")(inputs)
-x = layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu")(x)
-x = layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu")(x)
+inputs = layers.Input(shape=(100, 6, 1))
+x = layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu", padding='same')(inputs)
+x = layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu", padding='same')(x)
+# x = layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu", padding='same')(x)
 x = layers.GlobalAveragePooling2D()(x)
 embeddings = layers.Dense(units=8, activation=None)(x)
 embeddings = tf.nn.l2_normalize(embeddings, axis=-1)

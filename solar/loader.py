@@ -14,6 +14,8 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
+from kmeans import fit_kmeans
+from encoder import data_feature
 
 # Detection
 class waveformDetectionDL(Dataset):
@@ -55,7 +57,7 @@ class waveformDetectionDL(Dataset):
     
 class WaveformDetectionDLPickle(Dataset):
     
-    def __init__(self, path, client_num=None, fault_indx=None, file_name=None):
+    def __init__(self, path, client_num=None, fault_indx=None, file_name=None, is_kmeans=False):
         
         # Directory of normal and abnormal data
         
@@ -78,6 +80,12 @@ class WaveformDetectionDLPickle(Dataset):
         self.x_data = data['x_data']
         self.y_data = data['y_data']
         self.len = self.x_data.shape[0]
+        
+        if is_kmeans:
+            x_train_kmeans = data_feature(self.x_data)
+            kmeans_selected = fit_kmeans(x_train_kmeans, self.y_data)
+            self.x_data, self.y_data = self.x_data[kmeans_selected], self.y_data[kmeans_selected]
+            
         self.x_data = torch.from_numpy(self.x_data)
         self.y_data = torch.from_numpy(self.y_data)
     

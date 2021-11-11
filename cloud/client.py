@@ -42,6 +42,9 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
             data = pickle.load(f)
             x_train, y_train = data['x_data'], data['y_data']
             print("data num:", len(y_train))
+        with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
+            data = pickle.load(f)
+            _, y_train_gt = data['x_data'], data['y_data']
     else:
         with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
             data = pickle.load(f)
@@ -49,10 +52,20 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
     with open(os.path.join(workspace_dir, splited_data_folder, f'data_{client_index}.pkl'), 'rb') as f:
         data = pickle.load(f)
         x_test, y_test = data['x_data'], data['y_data']
+
     if is_kmeans:
-        kmeans_selected = fit_kmeans(x_train, y_train)
+        x_train_kmeans = data_feature(x_train)
+        kmeans_selected = fit_kmeans(x_train_kmeans, y_train)
         x_train, y_train = x_train[kmeans_selected], y_train[kmeans_selected]
         print("after kmeans:", len(y_train))
+        if y_train_gt is not None:
+            y_selected = y_train_gt[kmeans_selected]
+            ct = Counter(y_selected)
+            print(ct.most_common())
+        else:
+            
+            ct = Counter(y_train)
+            print(ct.most_common())
     print(f'x_train:{x_train.shape} y_train:{len(y_train)}')
     print(f'x_test:{x_test.shape} y_test:{len(y_test)}')
 
@@ -87,7 +100,7 @@ class CifarClient(fl.client.NumPyClient):
     def fit(self, parameters, config):
         model.set_weights(parameters)
         h = model.fit(x_train, y_train, epochs=1, batch_size=128)
-        print(h.history.keys())
+        print('history:', h)
         loss, acc = h.history['loss'][0], h.history['accuracy'][0]
         print(f"Train Loss: {loss}, Train Acc: {acc}")
         history['train']['loss'].append(loss)
