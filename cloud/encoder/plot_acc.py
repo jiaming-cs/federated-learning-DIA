@@ -34,9 +34,9 @@ import matplotlib.pyplot as plt
 # plt.savefig('./img/FEMINIST_60.png')
 
 
-fed = [0.90, 0.88, 0.84, 0.77, 0.63]
+fed = [0.897, 0.872, 0.855, 0.795, 0.698]
 
-kmean = [0.90, 0.87, 0.87, 0.87, 0.86]
+kmean = [0.876, 0.872, 0.869, 0.868, 0.855]
 
 
 attk = [0, 0.2, 0.4, 0.6, 0.8]
@@ -46,60 +46,11 @@ plt.plot(attk, fed, marker='*', color='r', label='FedAvg')
 plt.plot(attk, kmean, marker='^', color='b', label='Kmeans')
 plt.xticks(attk)
 plt.legend()
-plt.ylim(.5, 1)
+plt.ylim(.6, 1)
 plt.xlabel('Fraction of malicious devices')
 plt.ylabel('Test Accuracy')
-plt.title('FashionMnist-10Client-0.8Corrupt')
+plt.title('FashionMnist-20Client-0.8Corrupt')
 plt.show()
 
-plt.savefig('./img/FashionMnist-10Client-0.8Corrupt.png')
+plt.savefig('./img/FashionMnist-20Client-0.8Corrupt.png')
 
-
-# fed = [0.87, 0.84, 0.74, 0.58]
-# kmean_8 = [0.80, 0.79, 0.77, 0.78]
-# kmean_2 = [0.79, 0.77, 0.78, 0.79]
-
-
-
-# attk = [0, 0.4, 0.6, 0.8]
-
-
-# plt.plot(attk, fed, marker='*', color='r', label='FedAvg')
-# plt.plot(attk, kmean_8, marker='^', color='b', label='Kmeans-0.8error')
-# plt.plot(attk, kmean_2, marker='.', color='g', label='Kmeans-0.2error')
-# plt.xticks(attk)
-# plt.legend()
-# plt.ylim(.5, 1)
-# plt.xlabel('Fraction of malicious devices')
-# plt.ylabel('Test Accuracy')
-# plt.title('FashionMnist-10Client')
-# plt.show()
-
-# plt.savefig('./img/FashionMnist-10Client-0.8Corrupt.png')
-
-
-# plt.plot(attk, fedavg_2_attk, marker='*', color='r', label='FedAvg')
-# plt.plot(attk, kmean_2_attk, marker='^', color='b', label='Kmeans')
-
-# plt.legend()
-
-# plt.xlabel('Portion of data being attacked for each client')
-# plt.ylabel('Golbal model testing accuracy')
-# plt.title('Accuracy comparison (2 corrupt clients)')
-# plt.show()
-
-# plt.savefig('./img/two_corrupt.png')
-
-
-
-# plt.plot(attk, fedavg_3_attk, marker='*', color='r', label='FedAvg')
-# plt.plot(attk, kmean_3_attk, marker='^', color='b', label='Kmeans')
-
-# plt.legend()
-
-# plt.xlabel('Portion of data being attacked for each client')
-# plt.ylabel('Golbal model testing accuracy')
-# plt.title('Accuracy comparison (3 corrupt clients)')
-# plt.show()
-
-# plt.savefig('./img/three_corrupt.png')

@@ -73,10 +73,10 @@ class EmbeddingModel(keras.Model):
         return {m.name: m.result() for m in self.metrics}
     
 inputs = layers.Input(shape=(100, 6, 1))
-x = layers.Conv2D(filters=32, kernel_size=3, strides=2, activation="relu", padding='same')(inputs)
-x = layers.Conv2D(filters=64, kernel_size=3, strides=2, activation="relu", padding='same')(x)
+x = layers.LSTM(32)(inputs)
+
 # x = layers.Conv2D(filters=128, kernel_size=3, strides=2, activation="relu", padding='same')(x)
-x = layers.GlobalAveragePooling2D()(x)
+# x = layers.GlobalAveragePooling2D()(x)
 embeddings = layers.Dense(units=8, activation=None)(x)
 embeddings = tf.nn.l2_normalize(embeddings, axis=-1)
 

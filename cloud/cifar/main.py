@@ -125,7 +125,7 @@ def generate_cmd(fault_index=FAULT_INDEX, model_type='cnn', exp_type='local', ex
 generate_dataset(x_train, y_train, x_test, y_test, CLIENT_NUMBER, FAULT_INDEX, falut_ratio=FAULT_RATIO)
 
 
-os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
+# os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
 
 time.sleep(20)
 

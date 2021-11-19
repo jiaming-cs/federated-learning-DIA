@@ -9,7 +9,7 @@ def fit_kmeans(data_x, data_y):
     print('x_data: ', data_x.shape)
     print('y_data: ', data_y.shape)
     data_y = data_y.flatten()
-    data_x_flatten = [x.numpy().flatten() for x in data_x]
+    data_x_flatten = [x.flatten() for x in data_x]
     label_num = np.unique(data_y).shape[0]
     kmeans = KMeans(n_clusters=label_num).fit(data_x_flatten)
     pred_y = kmeans.labels_

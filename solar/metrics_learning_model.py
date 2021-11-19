@@ -31,7 +31,8 @@ x_data = data['x_data']
 y_data = data['y_data']
 x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.1, random_state=42)
         
-
+x_train = x_train / np.max(x_train)
+x_test = x_test/ np.max(x_test)
 
 
 x_train, x_test = np.expand_dims(x_train, -1), np.expand_dims(x_test, -1)

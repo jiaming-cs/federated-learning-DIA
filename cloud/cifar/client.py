@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import pickle
 import tensorflow as tf
 import os
-from models import get_naive_cnn, mobile_net
+from models import get_naive_cnn
 from kmeans import fit_kmeans
 import tensorflow as tf
 from collections import Counter
@@ -74,8 +74,8 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
     print(f'x_train:{x_train.shape} y_train:{len(y_train)}')
     print(f'x_test:{x_test.shape} y_test:{len(y_test)}')
 
-    y_train = to_categorical(y_train, 10)
-    y_test = to_categorical(y_test, 10)
+    # y_train = to_categorical(y_train, 10)
+    # y_test = to_categorical(y_test, 10)
     return x_train, y_train, x_test, y_test
 
 print(f"client_index:{client_index}")
@@ -99,9 +99,9 @@ print("y_test", y_test.shape)
 # model.add(Dense(128, activation='relu'))
 # model.add(Dense(10, activation='softmax'))
 
-model = mobile_net
+model = get_naive_cnn()
 
-model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
+model.compile("adam", tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=["accuracy"])
 
 
 
@@ -140,7 +140,7 @@ class CifarClient(fl.client.NumPyClient):
 if exp_type == 'cloud':
     fl.client.start_numpy_client("10.142.0.3:8080", client=CifarClient())
 else:
-    fl.client.start_numpy_client("[::]:8080", client=CifarClient())
+    fl.client.start_numpy_client("localhost:8080", client=CifarClient())
     # fl.client.start_numpy_client("localhost:8080", client=CifarClient())
 
 print(history)

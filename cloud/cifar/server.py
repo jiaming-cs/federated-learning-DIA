@@ -7,7 +7,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
 import tensorflow as tf
 import numpy as np
-from models import mobile_net
+from models import get_naive_cnn
 
 # model = Sequential()
 # model.add(InputLayer(input_shape=(128, )))
@@ -17,8 +17,8 @@ from models import mobile_net
 # model.add(Dense(128, activation='relu'))
 # model.add(Dense(10, activation='softmax'))
 
-model = mobile_net
-model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
+model = get_naive_cnn()
+model.compile("adam", tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=["accuracy"])
 
 
 workspace_dir="./"
@@ -28,7 +28,7 @@ with open(os.path.join(workspace_dir, splited_data_folder, f'data_test.pkl'), 'r
     
     x_test, y_test = data['x_data'], data['y_data']
     # x_test = np.reshape(x_test, (-1, 128))
-    y_test = to_categorical(y_test, 10)
+    # y_test = to_categorical(y_test, 10)
     
 def get_eval_fn(model):
     """Return an evaluation function for server-side evaluation."""

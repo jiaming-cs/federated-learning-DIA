@@ -13,7 +13,7 @@ from tensorflow.keras.models import Sequential
 import tensorflow as tf
 from collections import Counter
 
-from encoder import data_feature
+# from encoder import data_feature
 
 
 paser = ArgumentParser()
@@ -62,8 +62,8 @@ def load_data(client_index, fault_client_index, workspace_dir="./", splited_data
         x_test, y_test = data['x_data'], data['y_data']
     
     if is_kmeans:
-        x_train_kmeans = data_feature(x_train)
-        kmeans_selected = fit_kmeans(x_train_kmeans, y_train)
+        # x_train_kmeans = data_feature(x_train)
+        kmeans_selected = fit_kmeans(x_train, y_train)
         x_train, y_train = x_train[kmeans_selected], y_train[kmeans_selected]
         print("after kmeans:", len(y_train))
         if y_train_gt is not None:
