@@ -114,7 +114,7 @@ class CifarClient(fl.client.NumPyClient):
 
     def fit(self, parameters, config):
         model.set_weights(parameters)
-        h = model.fit(x_train, y_train, epochs=5, batch_size=128)
+        h = model.fit(x_train, y_train, epochs=30, batch_size=128)
         print(h.history.keys())
         loss, acc = h.history['loss'][-1], h.history['accuracy'][-1]
         print(f"Train Loss: {loss}, Train Acc: {acc}")
@@ -138,7 +138,7 @@ class CifarClient(fl.client.NumPyClient):
         return loss, len(x_test), {"Local test accuracy": acc}
 
 if exp_type == 'cloud':
-    fl.client.start_numpy_client("10.142.0.3:8080", client=CifarClient())
+    fl.client.start_numpy_client("localhost:8080", client=CifarClient())
 else:
     fl.client.start_numpy_client("[::]:8080", client=CifarClient())
     # fl.client.start_numpy_client("localhost:8080", client=CifarClient())

@@ -6,9 +6,9 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import os
 
-CLIENT_NUMBER = 10
-FAULT_INDEX = 7
-FAULT_RATIO = 0.8
+CLIENT_NUMBER = 20
+FAULT_INDEX = 11
+FAULT_RATIO = 0.4
 
 IS_KMEANS = True
 if IS_KMEANS:
@@ -135,3 +135,4 @@ os.system(generate_cmd())
 # os.system("nohup python server.py > server.log 2>&1 &")
 
 # "python client.py -c 0 -f -1 -m cnn -e local & python client.py -c 1 -f -1 -m cnn -e local"
+
