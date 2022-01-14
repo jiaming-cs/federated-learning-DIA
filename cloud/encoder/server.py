@@ -48,4 +48,4 @@ def get_eval_fn(model):
 
 strategy = fl.server.strategy.FedAvg(fraction_fit=1, fraction_eval=1.0, min_fit_clients=2, min_available_clients=2, eval_fn=get_eval_fn(model))
 
-fl.server.start_server(config={"num_rounds": 30}, strategy=strategy)
+fl.server.start_server(config={"num_rounds": 30}, strategy=strategy) #adjust communication rounds here

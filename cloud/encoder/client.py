@@ -107,7 +107,7 @@ model.compile("adam", "categorical_crossentropy", metrics=["accuracy"])
 
 
 
-class CifarClient(fl.client.NumPyClient):
+class Client(fl.client.NumPyClient):
 
     def get_parameters(self):
         return model.get_weights()
@@ -138,10 +138,10 @@ class CifarClient(fl.client.NumPyClient):
         return loss, len(x_test), {"Local test accuracy": acc}
 
 if exp_type == 'cloud':
-    fl.client.start_numpy_client("10.142.0.3:8080", client=CifarClient())
+    fl.client.start_numpy_client("10.142.0.3:8080", client=Client())
 else:
-    fl.client.start_numpy_client("[::]:8080", client=CifarClient())
-    # fl.client.start_numpy_client("localhost:8080", client=CifarClient())
+    fl.client.start_numpy_client("[::]:8080", client=Client())
+    # fl.client.start_numpy_client("localhost:8080", client=Client())
 
 print(history)
 
