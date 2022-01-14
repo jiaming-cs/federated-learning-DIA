@@ -6,11 +6,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 import os
 
-CLIENT_NUMBER = 4
-FAULT_INDEX = 1
-FAULT_RATIO = 0.8
-
-IS_KMEANS = True
+CLIENT_NUMBER = 20
+FAULT_INDEX = 3
+FAULT_RATIO = 0.3
+LOG_FOLDER = 'logs_f3e30'
+IS_KMEANS = False
 if IS_KMEANS:
     EXP_NAME = f'{CLIENT_NUMBER}_{FAULT_INDEX+1}_attack_{FAULT_RATIO}_kmeans'
 else:
@@ -29,17 +29,17 @@ y_test = np.squeeze(y_test)
 
 
 
-try:
-    os.makedirs(f"./logs/{EXP_NAME}")
-except:
-    pass
+
+os.makedirs(f"./{LOG_FOLDER}/{EXP_NAME}")
+
+
 
 def generate_cmd(fault_index=FAULT_INDEX, model_type='cnn', exp_type='local', exp_name = EXP_NAME, client_num = CLIENT_NUMBER):
 
     if IS_KMEANS:
-        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} -k > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
+        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} -k > ./{LOG_FOLDER}/{EXP_NAME}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
     else:
-        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} > ./logs/{exp_name}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
+        cmds = [f'python client.py -c {i} -f {fault_index} -m {model_type} -e {exp_type} -n {exp_name} > ./{LOG_FOLDER}/{EXP_NAME}/client_{i}_fault_{fault_index}.log' for i in range(client_num)]
     print(' & '.join(cmds))
     return ' & '.join(cmds)
 
@@ -49,7 +49,7 @@ def generate_cmd(fault_index=FAULT_INDEX, model_type='cnn', exp_type='local', ex
 generate_dataset(x_train, y_train, x_test, y_test, CLIENT_NUMBER, FAULT_INDEX, falut_ratio=FAULT_RATIO)
 
 
-os.system(f"nohup python server.py > ./logs/{EXP_NAME}/server.log 2>&1 &")
+os.system(f"nohup python server.py > ./{LOG_FOLDER}/{EXP_NAME}/server.log 2>&1 &")
 
 time.sleep(20)
 

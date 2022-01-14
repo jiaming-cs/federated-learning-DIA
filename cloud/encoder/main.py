@@ -63,3 +63,4 @@ os.system(generate_cmd())
 # os.system("nohup python server.py > server.log 2>&1 &")
 
 # "python client.py -c 0 -f -1 -m cnn -e local & python client.py -c 1 -f -1 -m cnn -e local"
+

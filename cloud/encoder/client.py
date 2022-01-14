@@ -114,7 +114,7 @@ class Client(fl.client.NumPyClient):
 
     def fit(self, parameters, config):
         model.set_weights(parameters)
-        h = model.fit(x_train, y_train, epochs=5, batch_size=128)
+        h = model.fit(x_train, y_train, epochs=30, batch_size=128)
         print(h.history.keys())
         loss, acc = h.history['loss'][-1], h.history['accuracy'][-1]
         print(f"Train Loss: {loss}, Train Acc: {acc}")
